@@ -6,15 +6,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -34,10 +38,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             //Text(text = "Hello World")
-            //Greeting()
+           // Greeting()
             //TextInput()
+//            Jetpack_Compose_PTheme {
+//                AppNavigation()
+//            }
+
             Jetpack_Compose_PTheme {
-                AppNavigation()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
 
         }
@@ -66,7 +79,7 @@ private fun PreviewGreeting() {
 }
 
 @Composable
-private fun Greeting() {
+private fun Greeting(name: String, modifier: Modifier) {
 //    Image(
 //        painter = painterResource(R.drawable.ic_launcher_foreground),
 //        contentDescription = "Dummy image",
@@ -82,6 +95,21 @@ private fun Greeting() {
 //            contentDescription = "demo button"
 //        )
 //    }
+
+    // Access colors from MaterialTheme
+    val colors = MaterialTheme.colorScheme
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(colors.primary), // Set background color
+        contentAlignment = Alignment.Center // Center content
+    ) {
+        Text(
+            text = "Hello World",
+            color = colors.secondary // Set text color
+        )
+    }
 }
 
 @Composable

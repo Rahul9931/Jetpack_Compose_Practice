@@ -8,9 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,10 +29,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.jetpack_compose_p.navigation.AppNavigation
 import com.example.jetpack_compose_p.ui.theme.Jetpack_Compose_PTheme
 
@@ -37,91 +45,86 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            //Text(text = "Hello World")
-           // Greeting()
-            //TextInput()
-//            Jetpack_Compose_PTheme {
-//                AppNavigation()
-//            }
-
             Jetpack_Compose_PTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                //AppNavigation()
+                //greetings("")
+                textExample()
             }
 
         }
     }
 }
 
-
 @Preview(showBackground = true, widthDp = 300, heightDp = 500)
 @Composable
-private fun PreviewGreeting() {
-//    Image(
-//        painter = painterResource(R.drawable.ic_launcher_foreground),
-//        contentDescription = "Dummy image",
-//        colorFilter = ColorFilter.tint(Color.Red),
-//        contentScale = ContentScale.Crop
-//    )
-    Button(onClick = {
-        Log.d("check_preview","button clicked")
-    }) {
-        Text(text = "my button")
-        Image(
-            painter = painterResource(R.drawable.ic_launcher_foreground),
-            contentDescription = "demo button"
-        )
-    }
+private fun PreviewFunction() {
+    //greetings("rahul")
+    textExample2()
 }
 
 @Composable
-private fun Greeting(name: String, modifier: Modifier) {
-//    Image(
-//        painter = painterResource(R.drawable.ic_launcher_foreground),
-//        contentDescription = "Dummy image",
-//        colorFilter = ColorFilter.tint(Color.Red),
-//        contentScale = ContentScale.Crop
-//    )
-//    Button(onClick = {
-//        Log.d("check_preview","button clicked")
-//    }) {
-//        Text(text = "my button")
-//        Image(
-//            painter = painterResource(R.drawable.ic_launcher_foreground),
-//            contentDescription = "demo button"
-//        )
-//    }
-
-    // Access colors from MaterialTheme
-    val colors = MaterialTheme.colorScheme
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colors.primary), // Set background color
-        contentAlignment = Alignment.Center // Center content
-    ) {
-        Text(
-            text = "Hello World",
-            color = colors.secondary // Set text color
-        )
-    }
-}
-
-@Composable
-fun TextInput() {
-    val state = remember{ mutableStateOf("") }
+private fun greetings(name: String){
+    val state = remember {  mutableStateOf("") }
     TextField(
         value = state.value,
         onValueChange = {
             state.value = it
-            Log.d("check_","new value -> ${it}")
-
         },
-        label = { Text(text = "Enter Message") }
+        label = {Text(text = "Enter Name")},
+
     )
 }
+
+@Composable
+private fun textExample(){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Heading Text",
+            fontSize = 15.sp,
+            color = Color.Red,
+            fontWeight = FontWeight.Bold,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2
+        )
+        Text(
+            text = "Heading Text 2",
+            style = MaterialTheme.typography.headlineSmall
+        )
+        Text(
+            text = "Heading Text 2",
+            style = MaterialTheme.typography.headlineLarge
+        )
+
+        // Truncated text with ellipsis
+        Text(
+            text = "This is a long text that will be truncated if it exceeds the limit",
+            fontSize = 14.sp,
+            color = Color.Red,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun textExample2(){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "This is ",
+            fontSize = 14.sp,
+            color = Color.Red
+        )
+    }
+}
+
+

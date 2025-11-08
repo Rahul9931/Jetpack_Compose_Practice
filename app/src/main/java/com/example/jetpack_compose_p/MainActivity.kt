@@ -14,19 +14,33 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +56,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +74,7 @@ class MainActivity : ComponentActivity() {
             Jetpack_Compose_PTheme {
                 //AppNavigation()
                 //greetings("")
-
+                BasicEditText()
             }
 
         }
@@ -69,79 +85,82 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun PreviewFunction() {
     //greetings("rahul")
-    MyButton()
+    BasicEditText()
 }
 
 @Composable
-private fun greetings(name: String){
-    val state = remember {  mutableStateOf("") }
-    TextField(
-        value = state.value,
-        onValueChange = {
-            state.value = it
-        },
-        label = {Text(text = "Enter Name")},
+private fun BasicEditText(){
+    val text1 = remember { mutableStateOf("") }
+    val text2 = remember { mutableStateOf("") }
+    var password = remember { mutableStateOf("") }
+    var isPasswordVisible = remember { mutableStateOf(false) }
+    var isShowError = remember { mutableStateOf(false) }
 
-    )
-}
-
-@Composable
-fun MyButton() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(8.dp)
+            .systemBarsPadding()
     ) {
-        val context = LocalContext.current
+        TextField(
+            value = text1.value,
+            onValueChange = { text1.value = it },
+            label = { Text(text = "Enter Email") },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+            trailingIcon = {Icon(Icons.Default.Check, contentDescription = null)}
 
-        Button(
-            onClick = {
-                Toast.makeText(context, "Welcome to Geeks for Geeks", Toast.LENGTH_LONG).show()
-            },
-            modifier = Modifier.padding(16.dp),
-            enabled = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.Green,
-                containerColor = Color.Black
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
-            border = BorderStroke(width = 2.dp, brush = SolidColor(Color.Green)),
-            contentPadding = PaddingValues(
-                start = 20.dp,
-                top = 12.dp,
-                end = 20.dp,
-                bottom = 12.dp
-            ),
-            interactionSource = remember { MutableInteractionSource() }  // used to trace button state
-        ) {
-            Text(
-                text = "Geeks for Geeks",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic,
-                fontFamily = FontFamily.Serif
-            )
-        }
-    }
-}
-
-@Composable
-private fun textExample2(){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "This is ",
-            fontSize = 14.sp,
-            color = Color.Red
         )
+
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = text2.value,
+            onValueChange = {
+
+                text2.value = it
+                if(text2.value.length > 0){
+                    isShowError.value = false
+                }
+                            },
+            label = { Text(text = "Enter Name") },
+            colors = TextFieldDefaults.colors(
+//                focusedContainerColor = Color.Green,
+//                unfocusedContainerColor = Color.Gray,
+                cursorColor = Color.Blue,
+                focusedIndicatorColor = Color.Magenta,
+                unfocusedIndicatorColor = Color.Cyan,
+            ),
+            isError = isShowError.value
+        )
+
+        if (isShowError.value){
+            Text(text="This field is required", color = Color.Red)
+        }
+
+        OutlinedTextField(
+            value = password.value,
+            onValueChange = { password.value = it },
+            label = { Text(text = "Enter Password")},
+            visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                var image = if (isPasswordVisible.value) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                IconButton(onClick = {isPasswordVisible.value = !isPasswordVisible.value}) {
+                    Icon(image, contentDescription = null)
+                }
+            }
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedButton(onClick = {
+            if (text2.value.isBlank()){
+                isShowError.value = true
+            }
+        }) {
+            Text(text="Submit")
+        }
+
     }
+
 }
 
 

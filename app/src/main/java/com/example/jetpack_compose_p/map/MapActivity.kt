@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 class MapActivity : ComponentActivity() {
@@ -25,7 +27,8 @@ class MapActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SimpleMapScreen()
+//                    SimpleMapScreen()
+                    MapWithMarkers()
                 }
             }
         }
@@ -47,6 +50,36 @@ fun SimpleMapScreen() {
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
     )
+}
+
+@Composable
+fun MapWithMarkers() {
+    // Define locations
+    val delhi = LatLng(28.6139, 77.2090)
+    val mumbai = LatLng(19.0760, 72.8777)
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(delhi, 4f) // Zoom out to see both markers
+    }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        // Marker for Delhi
+        Marker(
+            state = MarkerState(position = delhi),
+            title = "Delhi",
+            snippet = "Capital of India"
+        )
+
+        // Marker for Mumbai
+        Marker(
+            state = MarkerState(position = mumbai),
+            title = "Mumbai",
+            snippet = "Financial capital of India"
+        )
+    }
 }
 
 @Composable

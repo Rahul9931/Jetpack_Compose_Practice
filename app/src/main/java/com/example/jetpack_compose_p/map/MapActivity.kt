@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -19,6 +23,17 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+
+import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import kotlin.collections.isNotEmpty
 
 class MapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +46,8 @@ class MapActivity : ComponentActivity() {
                 ) {
 //                    SimpleMapScreen()
 //                    MapWithMarkers()
-                    MapWithMarkersAndLines()
+//                    MapWithMarkersAndLines()
+                    MapWithRoutePaths()
                 }
             }
         }
@@ -140,6 +156,98 @@ fun MapWithMarkersAndLines() {
         )
     }
 }
+
+@Composable
+fun MapWithRoutePaths() {
+    val viewModel: RouteViewModel = viewModel()
+    val delhiToMumbaiRoute by viewModel.delhiToMumbaiRoute.collectAsState()
+    val mumbaiToChennaiRoute by viewModel.mumbaiToChennaiRoute.collectAsState()
+    val loadingState by viewModel.loadingState.collectAsState()
+
+    val delhi = LatLng(28.6139, 77.2090)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(delhi, 5f)
+    }
+
+    // Log the state changes
+    LaunchedEffect(delhiToMumbaiRoute) {
+        Log.d("MAP_COMPOSABLE", "Delhi-Mumbai route updated: ${delhiToMumbaiRoute.size} points")
+    }
+
+    LaunchedEffect(mumbaiToChennaiRoute) {
+        Log.d("MAP_COMPOSABLE", "Mumbai-Chennai route updated: ${mumbaiToChennaiRoute.size} points")
+    }
+
+    LaunchedEffect(loadingState) {
+        Log.d("MAP_COMPOSABLE", "Loading state: $loadingState")
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState
+        ) {
+            // Markers
+            Marker(
+                state = MarkerState(position = delhi),
+                title = "Delhi",
+                snippet = "Capital of India"
+            )
+
+            Marker(
+                state = MarkerState(position = LatLng(19.0760, 72.8777)),
+                title = "Mumbai",
+                snippet = "Financial capital"
+            )
+
+            Marker(
+                state = MarkerState(position = LatLng(13.0827, 80.2707)),
+                title = "Chennai",
+                snippet = "Capital of Tamil Nadu"
+            )
+
+            // Routes
+            if (delhiToMumbaiRoute.isNotEmpty()) {
+                Log.d("MAP_COMPOSABLE", "Drawing Delhi-Mumbai polyline with ${delhiToMumbaiRoute.size} points")
+                Polyline(
+                    points = delhiToMumbaiRoute,
+                    color = Color.Blue,
+                    width = 8f
+                )
+            } else {
+                Log.d("MAP_COMPOSABLE", "Delhi-Mumbai route is empty, not drawing polyline")
+            }
+
+            if (mumbaiToChennaiRoute.isNotEmpty()) {
+                Log.d("MAP_COMPOSABLE", "Drawing Mumbai-Chennai polyline with ${mumbaiToChennaiRoute.size} points")
+                Polyline(
+                    points = mumbaiToChennaiRoute,
+                    color = Color.Red,
+                    width = 8f
+                )
+            } else {
+                Log.d("MAP_COMPOSABLE", "Mumbai-Chennai route is empty, not drawing polyline")
+            }
+        }
+
+        // Loading indicator
+        Text(
+            text = loadingState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(16.dp),
+            color = Color.Black,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
+    // Load routes when composable is first created
+    LaunchedEffect(Unit) {
+        Log.d("MAP_COMPOSABLE", "LaunchedEffect started, calling loadRoutes()")
+        viewModel.loadRoutes()
+    }
+}
+
 
 @Composable
 fun MyAppTheme(content: @Composable () -> Unit) {
